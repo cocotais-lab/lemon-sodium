@@ -1,7 +1,7 @@
 const { CocotaisBotPlugin } = require("cocotais-bot")
 const axios = require("axios").default
 const fse = require("fs-extra")
-const plugin = new CocotaisBotPlugin("codemao-main", "1.1.0")
+const plugin = new CocotaisBotPlugin("codemao-main", "1.1.1")
 function banURL(url) {
     return url.replaceAll('.', '%2E')
 }
@@ -52,6 +52,42 @@ plugin.onMounted((bot) => {
                 reply += "===============\n"
                 reply += `TraceID: ${time}`
                 reply += fse.readFileSync("./globalnote.txt").toString('utf-8')
+                event.reply(reply)
+            })
+    })
+
+    plugin.command.register('/查名字', "用昵称查询编程猫用户\n   用法：@机器人 /查名字 用户昵称 页码(可选)", (type, msg, event) => {
+        let nickname = msg[1]
+        let page = msg.length >= 3 ? msg[2] : "1"
+        axios.get(encodeURI(`https://udbapi.hachimlab.top/search/onlyid?nickname=${nickname}&page=${page}&limit=5`))
+            .then((x) => {
+                if (x.data.code != 200) {
+                    event.reply("找不到这名训练师~")
+                    return
+                }
+                let reply = "查询到的用户：\n"
+                reply += "===============\n"
+                x.data.items.forEach((element, index) => {
+                    reply += `${(page - 1) * 5 + index + 1}. [ID: ${element.id}] ${element.nickname}\n`
+                })
+                reply += "===============\n"
+                let start = (page - 1) * 5 + 1
+                let end = (page - 1) * 5 + x.data.items.length
+                reply += `第${start}到${end}条，共${x.data.total}条。`
+                reply += fse.readFileSync("./globalnote.txt").toString('utf-8')
+                event.reply(banURL(reply))
+            })
+            .catch((e) => {
+
+                let time = Date.now()
+                const error = `[群聊插件][${time}][${msg.join(" ")}] ${JSON.stringify(e)}\n`
+                fse.appendFileSync('./error_reporting.txt', error)
+
+                let reply = "查询失败，请稍后重试~\n"
+                reply += "===============\n"
+                reply += `TraceID: ${time}`
+                reply += fse.readFileSync("./globalnote.txt").toString('utf-8')
+
                 event.reply(reply)
             })
     })
