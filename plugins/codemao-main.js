@@ -78,7 +78,10 @@ plugin.onMounted((bot) => {
                 event.reply(banURL(reply))
             })
             .catch((e) => {
-
+            if (e.response?.status === 404) {
+                event.reply("找不到这名训练师~")
+                return
+            }
                 let time = Date.now()
                 const error = `[群聊插件][${time}][${msg.join(" ")}] ${JSON.stringify(e)}\n`
                 fse.appendFileSync('./error_reporting.txt', error)
