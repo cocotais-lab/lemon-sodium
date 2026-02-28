@@ -56,7 +56,7 @@ plugin.onMounted((bot) => {
             })
     })
 
-    plugin.command.register('/查名字', "用昵称查询编程猫用户\n   用法：@机器人 /查名字 用户昵称 页码(可选)", (type, msg, event) => {
+    plugin.command.register('/查昵称', "用昵称查询编程猫用户\n   用法：@机器人 /查昵称 用户昵称 页码(可选)", (type, msg, event) => {
         let nickname = msg[1]
         let page = msg.length >= 3 ? msg[2] : "1"
         axios.get(encodeURI(`https://udbapi.hachimlab.top/search/onlyid?nickname=${nickname}&page=${page}&limit=5`))
