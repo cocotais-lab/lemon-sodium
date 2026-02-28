@@ -61,8 +61,8 @@ plugin.onMounted((bot) => {
         let page = msg.length >= 3 ? msg[2] : "1"
         axios.get(encodeURI(`https://udbapi.hachimlab.top/search/onlyid?nickname=${nickname}&page=${page}&limit=5`))
             .then((x) => {
-                if (x.data.code != 200) {
-                    event.reply("找不到这名训练师~")
+                if (x.data.status !== "success") {
+                    event.reply("查询失败~ 状态：" + x.data.status)
                     return
                 }
                 let reply = "查询到的用户：\n"
